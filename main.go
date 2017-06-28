@@ -1,8 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"io"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -64,13 +63,6 @@ func main() {
 }
 
 func gasPrice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	resp, err := http.Post(globalConfig.geth,
-		"application/json",
-		bytes.NewBufferString(`{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":73}`))
-
-	if err != nil {
-		log.Println("call:", err)
-	}
-
-	io.Copy(w, resp.Body)
+	ret := fmt.Sprintf(`{"jsonrpc":"2.0","id":1,"result":"%v"}`, latestGasPrice.Load())
+	w.Write([]byte(ret))
 }

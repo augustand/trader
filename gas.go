@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"sync/atomic"
 	"time"
 
 	"github.com/Jeffail/gabs"
+	log "github.com/Sirupsen/logrus"
 )
 
 var latestGasPrice atomic.Value
@@ -23,9 +23,10 @@ func update_gas_task() {
 		}
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
 		value, ok := jsonParsed.Path("result").Data().(string)
-		if ok {
-			log.Println("gas:", value)
+		if !ok {
+			log.Println("cannot get gasPrice", jsonParsed)
 		}
+		latestGasPrice.Store(value)
 		<-time.After(globalConfig.gasUpdate)
 	}
 }
