@@ -53,8 +53,8 @@ func main() {
 			go update_gas_task()
 			// webapi
 			router := httprouter.New()
-			router.GET("/getGasPrice", getGasPriceHandler)
-			router.POST("/getTransactionCountHandler", getTransactionCountHandler)
+			router.GET("/eth/getGasPrice", getGasPriceHandler)
+			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
