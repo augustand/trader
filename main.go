@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -54,15 +53,11 @@ func main() {
 			go update_gas_task()
 			// webapi
 			router := httprouter.New()
-			router.GET("/gasPrice", gasPrice)
+			router.GET("/getGasPrice", getGasPriceHandler)
+			router.POST("/getTransactionCountHandler", getTransactionCountHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
 	}
 	app.Run(os.Args)
-}
-
-func gasPrice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	ret := fmt.Sprintf(`{"jsonrpc":"2.0","id":1,"result":"%v"}`, latestGasPrice.Load())
-	w.Write([]byte(ret))
 }
