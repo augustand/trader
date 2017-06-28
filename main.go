@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
@@ -13,8 +14,9 @@ import (
 )
 
 type Config struct {
-	listen string
-	geth   string
+	listen    string
+	geth      string
+	gasUpdate time.Duration
 }
 
 var globalConfig Config
@@ -35,12 +37,23 @@ func main() {
 				Value: "http://127.0.0.1:8545",
 				Usage: "geth nodes",
 			},
+			&cli.DurationFlag{
+				Name:  "gas_update",
+				Value: 10 * time.Second,
+				Usage: "set gas update period",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			globalConfig.listen = c.String("listen")
 			globalConfig.geth = c.String("geth")
+			globalConfig.gasUpdate = c.Duration("gas_update")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
+			log.Println("gas_update:", globalConfig.gasUpdate)
+
+			// init
+			go update_gas_task()
+			// webapi
 			router := httprouter.New()
 			router.GET("/gasPrice", gasPrice)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
@@ -58,5 +71,6 @@ func gasPrice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if err != nil {
 		log.Println("call:", err)
 	}
+
 	io.Copy(w, resp.Body)
 }
