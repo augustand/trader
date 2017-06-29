@@ -55,7 +55,7 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
-		ret := fmt.Sprintf(`{"TxHash":"%v"}`, value)
+		ret := fmt.Sprintf(`{"txHash":"%v"}`, value)
 		w.Write([]byte(ret))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
