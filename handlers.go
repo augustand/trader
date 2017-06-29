@@ -28,11 +28,13 @@ func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httpr
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
-			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
 		ret := fmt.Sprintf(`{"count":"%v"}`, value)
 		w.Write([]byte(ret))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
