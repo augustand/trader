@@ -54,7 +54,9 @@ func main() {
 			// webapi
 			router := httprouter.New()
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
+			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
+			router.POST("/eth/sendRawTransaction", sendRawTransactionHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
