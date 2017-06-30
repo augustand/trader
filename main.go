@@ -66,6 +66,7 @@ func main() {
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			router.POST("/eth/sendRawTransaction", sendRawTransactionHandler)
 			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)
+			router.POST("/eth/tokens/totalSupply", tokenTotalSupplyHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},

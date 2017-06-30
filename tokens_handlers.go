@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	signBalanceOf = "balanceOf(address)"
+	signBalanceOf   = "balanceOf(address)"
+	signTotalSupply = "totalSupply()"
 )
 
-var signatures []string = []string{signBalanceOf}
+var signatures []string = []string{signBalanceOf, signTotalSupply}
 
 var ERC20Signatures = make(map[string]string)
 
@@ -65,6 +66,33 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 			return
 		}
 		ret := fmt.Sprintf(`{"value":"%v"}`, count)
+		w.Write([]byte(ret))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+}
+
+func tokenTotalSupplyHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	jsonParsed, _ := gabs.ParseJSONBuffer(r.Body)
+	contract, ok := jsonParsed.Path("contract").Data().(string)
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	code := fmt.Sprintf("0x%v", ERC20Signatures[signTotalSupply])
+	log.Println("code:", code, "#")
+	if resp, err := http.Post(globalConfig.geth,
+		"application/json",
+		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_call", "params": [{"from": "%v", "to": "%v", "data": "%v"}, "latest"], "id": 0}`, globalConfig.account, contract, code))); err == nil {
+		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
+		value, ok := jsonParsed.Path("result").Data().(string)
+		log.Println(jsonParsed)
+		if !ok {
+			w.Write([]byte(jsonParsed.Path("error").String()))
+			return
+		}
+		ret := fmt.Sprintf(`{"value":"%v"}`, value)
 		w.Write([]byte(ret))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
