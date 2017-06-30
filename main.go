@@ -15,6 +15,7 @@ type Config struct {
 	listen    string
 	geth      string
 	gasUpdate time.Duration
+	account   string
 }
 
 var globalConfig Config
@@ -40,14 +41,21 @@ func main() {
 				Value: 10 * time.Second,
 				Usage: "set gas update period",
 			},
+			&cli.StringFlag{
+				Name:  "account",
+				Value: "0x6bd25eb2e60f5cc47c86abf6ba1b3d03fc74ee27",
+				Usage: "address for executing constant queries for tokens",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			globalConfig.listen = c.String("listen")
 			globalConfig.geth = c.String("geth")
 			globalConfig.gasUpdate = c.Duration("gas_update")
+			globalConfig.account = c.String("account")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
 			log.Println("gas_update:", globalConfig.gasUpdate)
+			log.Println("account:", globalConfig.account)
 
 			// init
 			go update_gas_task()
@@ -57,6 +65,7 @@ func main() {
 			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			router.POST("/eth/sendRawTransaction", sendRawTransactionHandler)
+			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
