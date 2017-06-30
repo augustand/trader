@@ -15,7 +15,6 @@ type Config struct {
 	listen    string
 	geth      string
 	gasUpdate time.Duration
-	account   string
 }
 
 var globalConfig Config
@@ -51,11 +50,9 @@ func main() {
 			globalConfig.listen = c.String("listen")
 			globalConfig.geth = c.String("geth")
 			globalConfig.gasUpdate = c.Duration("gas_update")
-			globalConfig.account = c.String("account")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
 			log.Println("gas_update:", globalConfig.gasUpdate)
-			log.Println("account:", globalConfig.account)
 
 			// init
 			go update_gas_task()

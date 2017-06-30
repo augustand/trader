@@ -55,7 +55,7 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 	addrb := strings.Repeat("0", 24) + address[2:]
 
 	data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], addrb)
-	if ret, err := eth_call(globalConfig.account, contract, data); err == nil {
+	if ret, err := eth_call(contract, data); err == nil {
 		w.Write([]byte(ret))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
@@ -71,17 +71,17 @@ func tokenTotalSupplyHandler(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	data := fmt.Sprintf("0x%v", ERC20Signatures[signTotalSupply])
-	if ret, err := eth_call(globalConfig.account, contract, data); err == nil {
+	if ret, err := eth_call(contract, data); err == nil {
 		w.Write([]byte(ret))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
-func eth_call(from, to, data string) (string, error) {
+func eth_call(to, data string) (string, error) {
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
-		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_call", "params": [{"from": "%v", "to": "%v", "data": "%v"}, "latest"], "id": 0}`, from, to, data))); err == nil {
+		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_call", "params": [{"to": "%v", "data": "%v"}, "latest"], "id": 0}`, to, data))); err == nil {
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
 		value, ok := jsonParsed.Path("result").Data().(string)
 		if !ok {
