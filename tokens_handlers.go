@@ -50,8 +50,10 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	code := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], string([]byte(address)[2:]))
-	log.Println(code)
+	addrb := strings.Repeat("0", 24) + address[2:]
+
+	code := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], addrb)
+	log.Println("code:", code, "#")
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
 		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_call", "params": [{"from": "%v", "to": "%v", "data": "%v"}, "latest"], "id": 0}`, globalConfig.account, contract, code))); err == nil {
