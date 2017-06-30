@@ -64,7 +64,7 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
-		ret := fmt.Sprintf(`{"count":"%v"}`, count)
+		ret := fmt.Sprintf(`{"value":"%v"}`, count)
 		w.Write([]byte(ret))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
