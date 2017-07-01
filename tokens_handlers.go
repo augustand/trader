@@ -2,7 +2,8 @@ package main
 
 import (
 	"bytes"
-	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,51 +11,33 @@ import (
 
 	"github.com/Jeffail/gabs"
 	"github.com/julienschmidt/httprouter"
-	"github.com/xtaci/trader/sha3"
 )
 
-const (
-	signBalanceOf   = "balanceOf(address)"
-	signTotalSupply = "totalSupply()"
-	signTransfer    = "transfer(address,uint)"
-)
-
-var signatures []string = []string{signBalanceOf, signTotalSupply, signTransfer}
-
-var ERC20Signatures = make(map[string]string)
-
-func init() {
-	for _, sign := range signatures {
-		d := sha3.NewKeccak256()
-		d.Write([]byte(sign))
-		h := d.Sum(nil)
-		ERC20Signatures[sign] = hex.EncodeToString(h[0:4])
-		log.Println(sign, ERC20Signatures[sign])
-	}
+type tokenBalanceOfStruct struct {
+	Name    string `json:"name"`
+	Address string `json:"address"`
 }
 
 func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	jsonParsed, _ := gabs.ParseJSONBuffer(r.Body)
-	address, ok := jsonParsed.Path("address").Data().(string)
+	abi := tokenBalanceOfStruct{}
+	dec := json.NewDecoder(r.Body)
+	dec.Decode(&abi)
+	contract, ok := contractAddresses[abi.Name]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	contract, ok := jsonParsed.Path("contract").Data().(string)
-	if !ok {
+	var err error
+	abi.Address, err = paduint(abi.Address)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if !strings.HasPrefix(address, "0x") {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	log.Println(abi)
 
-	addrb := strings.Repeat("0", 24) + address[2:]
-
-	data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], addrb)
+	data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], abi.Address)
 	if ret, err := eth_call(contract, data); err == nil {
 		w.Write([]byte(ret))
 	} else {
@@ -62,9 +45,15 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 }
 
+type tokenTotalSupplyStruct struct {
+	Name string `json:"name"`
+}
+
 func tokenTotalSupplyHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	jsonParsed, _ := gabs.ParseJSONBuffer(r.Body)
-	contract, ok := jsonParsed.Path("contract").Data().(string)
+	abi := tokenTotalSupplyStruct{}
+	dec := json.NewDecoder(r.Body)
+	dec.Decode(&abi)
+	contract, ok := contractAddresses[abi.Name]
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -91,4 +80,51 @@ func eth_call(to, data string) (string, error) {
 	} else {
 		return "", err
 	}
+}
+
+func paduint(value string) (string, error) {
+	if !strings.HasPrefix(value, "0x") {
+		return value, errors.New("must start with 0x")
+	}
+
+	value = value[2:]
+	n := len(value)
+	if n%32 == 0 {
+		return value, nil
+	} else {
+		return strings.Repeat("0", 32-n%32) + value, nil
+	}
+}
+
+type transferABIStruct struct {
+	Name  string `json:"name"`
+	To    string `json:"to"`
+	Value string `json:"value"`
+}
+
+func transferABIHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	abi := transferABIStruct{}
+	dec := json.NewDecoder(r.Body)
+	dec.Decode(&abi)
+	contract, ok := contractAddresses[abi.Name]
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	var err error
+	abi.To, err = paduint(abi.To)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	abi.Value, err = paduint(abi.Value)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	data := fmt.Sprintf("0x%v%v%v", ERC20Signatures[signTransfer], abi.To, abi.Value)
+	w.Write([]byte(fmt.Sprintf(`{"contract":"%v", "data":"%v"}`, contract, data)))
 }
