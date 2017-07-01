@@ -29,7 +29,7 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	var err error
-	abi.Address, err = paduint(abi.Address)
+	abi.Address, err = paduint(abi.Address, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -82,17 +82,17 @@ func eth_call(to, data string) (string, error) {
 	}
 }
 
-func paduint(value string) (string, error) {
+func paduint(value string, size int) (string, error) {
 	if !strings.HasPrefix(value, "0x") {
 		return value, errors.New("must start with 0x")
 	}
 
 	value = value[2:]
 	n := len(value)
-	if n%32 == 0 {
+	if n%size == 0 {
 		return value, nil
 	} else {
-		return strings.Repeat("0", 32-n%32) + value, nil
+		return strings.Repeat("0", size-n%size) + value, nil
 	}
 }
 
@@ -113,13 +113,13 @@ func transferABIHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	var err error
-	abi.To, err = paduint(abi.To)
+	abi.To, err = paduint(abi.To, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	abi.Value, err = paduint(abi.Value)
+	abi.Value, err = paduint(abi.Value, 64)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

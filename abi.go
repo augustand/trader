@@ -10,7 +10,7 @@ import (
 const (
 	signBalanceOf   = "balanceOf(address)"
 	signTotalSupply = "totalSupply()"
-	signTransfer    = "transfer(address,uint)"
+	signTransfer    = "transfer(address,uint256)"
 )
 
 var (
@@ -28,5 +28,5 @@ func init() {
 		log.Println(sign, ERC20Signatures[sign])
 	}
 
-	contractAddresses["test"] = "0x11e1268fc0c49ada36151d4fa2cd0d945e062c1a"
+	contractAddresses["test"] = "0xc6f940ef1c52ea5f324c88eb76f28e3c295d617e"
 }
