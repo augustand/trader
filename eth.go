@@ -19,7 +19,7 @@ func eth_call(to, data string) (string, error) {
 		if !ok {
 			return jsonParsed.Path("error").String(), nil
 		}
-		return fmt.Sprintf(`{"value":"%v"}`, value), nil
+		return value, nil
 	} else {
 		return "", err
 	}

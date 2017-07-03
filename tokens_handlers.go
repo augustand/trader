@@ -36,7 +36,7 @@ func tokenBalanceOfHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], abi.Address)
 	if ret, err := eth_call(contract, data); err == nil {
-		w.Write([]byte(ret))
+		fmt.Fprintf(w, `{"value":"%v"}`, ret)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 	}
@@ -58,7 +58,7 @@ func tokenTotalSupplyHandler(w http.ResponseWriter, r *http.Request, ps httprout
 
 	data := fmt.Sprintf("0x%v", ERC20Signatures[signTotalSupply])
 	if ret, err := eth_call(contract, data); err == nil {
-		w.Write([]byte(ret))
+		fmt.Fprintf(w, `{"value":"%v"}`, ret)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 	}

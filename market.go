@@ -57,7 +57,6 @@ func (m *coinMarketCap) update_task() {
 			m.muPriceList.Lock()
 			m.priceList = make(map[string]priceCoinMarketCap)
 			for k := range list {
-				fmt.Println(list[k].Symbol, list[k].PriceCNY)
 				m.priceList[list[k].Symbol] = list[k]
 			}
 			// add a pseudo asset test
@@ -136,4 +135,7 @@ func priceListHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	for k := range prices {
 		items = append(items, assetItem{assets[k], prices[k]})
 	}
+
+	enc := json.NewEncoder(w)
+	enc.Encode(items)
 }
