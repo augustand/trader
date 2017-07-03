@@ -12,9 +12,10 @@ import (
 )
 
 type Config struct {
-	listen    string
-	geth      string
-	gasUpdate time.Duration
+	listen           string
+	geth             string
+	gasUpdate        time.Duration
+	coinMarketCapURL string
 }
 
 var globalConfig Config
@@ -35,6 +36,11 @@ func main() {
 				Value: "http://127.0.0.1:8545",
 				Usage: "geth nodes",
 			},
+			&cli.StringFlag{
+				Name:  "coinmarketcapurl",
+				Value: "https://api.coinmarketcap.com/v1/ticker/?convert=CNY",
+				Usage: "query market price",
+			},
 			&cli.DurationFlag{
 				Name:  "gas_update",
 				Value: 10 * time.Second,
@@ -50,9 +56,11 @@ func main() {
 			globalConfig.listen = c.String("listen")
 			globalConfig.geth = c.String("geth")
 			globalConfig.gasUpdate = c.Duration("gas_update")
+			globalConfig.coinMarketCapURL = c.String("coinmarketcapurl")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
 			log.Println("gas_update:", globalConfig.gasUpdate)
+			log.Println("coinmarketcapurl:", globalConfig.coinMarketCapURL)
 
 			// init
 			go update_gas_task()

@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/Jeffail/gabs"
 	"github.com/julienschmidt/httprouter"
