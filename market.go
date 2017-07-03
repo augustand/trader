@@ -8,6 +8,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/julienschmidt/httprouter"
 )
 
 const (
@@ -59,6 +60,8 @@ func (m *coinMarketCap) update_task() {
 				fmt.Println(list[k].Symbol, list[k].PriceCNY)
 				m.priceList[list[k].Symbol] = list[k]
 			}
+			// add a pseudo asset test
+			m.priceList["test"] = priceCoinMarketCap{PriceCNY: "7.0", PriceUSD: "1.0"}
 			m.muPriceList.Unlock()
 		} else {
 			log.Println(err)
@@ -67,6 +70,70 @@ func (m *coinMarketCap) update_task() {
 	}
 }
 
+type assetItem struct {
+	Count string `json:"count"`
+	Price string `json:"price"`
+}
+
+func (m *coinMarketCap) getPrices(symbols []string, unit string) (prices []string) {
+	m.muPriceList.Lock()
+	defer m.muPriceList.Unlock()
+	for k := range symbols {
+		if item, ok := m.priceList[symbols[k]]; ok {
+			switch unit {
+			case "CNY":
+				prices = append(prices, item.PriceCNY)
+			case "USD":
+				prices = append(prices, item.PriceUSD)
+			}
+
+		}
+	}
+	return
+}
+
+func (m *coinMarketCap) getAssets(symbols []string, address string) (prices []string) {
+	for k := range symbols {
+		contract := contractAddresses[symbols[k]]
+		address, err := paduint(address, 64)
+		if err != nil {
+			continue
+		}
+
+		data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], address)
+		if ret, err := eth_call(contract, data); err == nil {
+			prices = append(prices, ret)
+		}
+	}
+
+	return
+}
+
 func init() {
 	defaultCoinMarketCap = NewCoinMarketCap()
+}
+
+type priceListStruct struct {
+	List    []string `json:"list"`
+	Unit    string   `json:"unit"`
+	Address string   `json:"address"`
+}
+
+func priceListHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	l := priceListStruct{}
+	dec := json.NewDecoder(r.Body)
+	dec.Decode(&l)
+
+	prices := defaultCoinMarketCap.getPrices(l.List, l.Unit)
+	assets := defaultCoinMarketCap.getAssets(l.List, l.Address)
+
+	if len(prices) != len(assets) {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	items := make([]assetItem, 0, len(prices))
+	for k := range prices {
+		items = append(items, assetItem{assets[k], prices[k]})
+	}
 }
