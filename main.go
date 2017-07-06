@@ -54,7 +54,7 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:  "postgres",
-				Value: "host=localhost user=postgres dbname=trader sslmode=disable password=qwer1234",
+				Value: "host=localhost port=5432 user=postgres dbname=trader sslmode=disable password=qwer1234",
 				Usage: "postgres connection string",
 			},
 		},
@@ -72,7 +72,7 @@ func main() {
 
 			// init
 			go update_gas_task()
-			defaultTransactionManager.init(globalConfig.postgres)
+			defaultETHTXManager.init(globalConfig.postgres)
 
 			// webapi
 			router := httprouter.New()

@@ -15,10 +15,6 @@
 			"revisionTime": "2017-06-20T14:45:10Z"
 		},
 		{
-			"path": "github.com/ethereum/go-ethereum/crypto/sha3",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "IqQmIPZbwgzbZD4k7YX6Rj230pY=",
 			"path": "github.com/jinzhu/gorm",
 			"revision": "2a1463811ee1dc85d168fd639a2d4251d030e6e5",

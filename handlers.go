@@ -57,6 +57,7 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 		}
 		ret := fmt.Sprintf(`{"txHash":"%v"}`, value)
 		w.Write([]byte(ret))
+		defaultETHTXManager.record(value)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 	}
