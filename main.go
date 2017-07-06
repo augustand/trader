@@ -16,6 +16,7 @@ type Config struct {
 	geth             string
 	gasUpdate        time.Duration
 	coinMarketCapURL string
+	postgres         string
 }
 
 var globalConfig Config
@@ -51,19 +52,28 @@ func main() {
 				Value: "0x6bd25eb2e60f5cc47c86abf6ba1b3d03fc74ee27",
 				Usage: "address for executing constant queries for tokens",
 			},
+			&cli.StringFlag{
+				Name:  "postgres",
+				Value: "host=localhost user=postgres dbname=trader sslmode=disable password=qwer1234",
+				Usage: "postgres connection string",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			globalConfig.listen = c.String("listen")
 			globalConfig.geth = c.String("geth")
 			globalConfig.gasUpdate = c.Duration("gas_update")
 			globalConfig.coinMarketCapURL = c.String("coinmarketcapurl")
+			globalConfig.postgres = c.String("postgres")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
 			log.Println("gas_update:", globalConfig.gasUpdate)
 			log.Println("coinmarketcapurl:", globalConfig.coinMarketCapURL)
+			log.Println("postgres:", globalConfig.postgres)
 
 			// init
 			go update_gas_task()
+			defaultTransactionManager.init(globalConfig.postgres)
+
 			// webapi
 			router := httprouter.New()
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
