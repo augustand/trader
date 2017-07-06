@@ -6,6 +6,7 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/jinzhu/gorm"
 	"github.com/julienschmidt/httprouter"
 
 	cli "gopkg.in/urfave/cli.v2"
@@ -71,8 +72,12 @@ func main() {
 			log.Println("postgres:", globalConfig.postgres)
 
 			// init
+			db, err := gorm.Open("postgres", globalConfig.postgres)
+			if err != nil {
+				panic("failed to connect database")
+			}
 			go update_gas_task()
-			defaultETHTXManager.init(globalConfig.postgres)
+			defaultETHTXManager = NewTransactionManger(db)
 
 			// webapi
 			router := httprouter.New()
