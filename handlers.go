@@ -29,6 +29,7 @@ func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httpr
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
@@ -53,6 +54,7 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
@@ -77,6 +79,7 @@ func getBalanceHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
@@ -109,6 +112,7 @@ func getTransactionHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getTransactionByHash","params":["%v"], "id":1}`, txhash))); err == nil {
 		c, _ := gabs.ParseJSONBuffer(resp.Body)
 		if !c.ExistsP("result") {
+			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}

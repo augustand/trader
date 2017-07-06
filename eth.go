@@ -36,7 +36,7 @@ func init() {
 		log.Println(sign, ERC20Signatures[sign])
 	}
 
-	contractAddresses["test"] = "0xc6f940ef1c52ea5f324c88eb76f28e3c295d617e"
+	contractAddresses["test"] = "0x0125bb97c11a9d6c62814f0645471972804214ed"
 	contractAddresses["GNT"] = "0xa74476443119A942dE498590Fe1f2454d7D4aC0d"
 	contractAddresses["GNO"] = "0x6810e776880c02933d47db1b9fc05908e5386b96"
 	contractAddresses["ICN"] = "0x888666CA69E0f178DED6D75b5726Cee99A87D698"
