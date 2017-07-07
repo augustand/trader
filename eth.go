@@ -15,13 +15,14 @@ import (
 )
 
 const (
-	signBalanceOf   = "balanceOf(address)"
-	signTotalSupply = "totalSupply()"
-	signTransfer    = "transfer(address,uint256)"
+	signBalanceOf     = "balanceOf(address)"
+	signTotalSupply   = "totalSupply()"
+	signTransfer      = "transfer(address,uint256)"
+	signEventTransfer = "Transfer(address,address,uint256)"
 )
 
 var (
-	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer}
+	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer, signEventTransfer}
 	ERC20Signatures = make(map[string]string)
 )
 
