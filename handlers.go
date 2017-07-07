@@ -149,3 +149,9 @@ func blockNumberHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
+
+func blockPerSecondHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	bps := defaultBlockTimeEstimator.getBPS()
+	ret := fmt.Sprintf(`{"bps":%v}`, bps)
+	w.Write([]byte(ret))
+}

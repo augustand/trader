@@ -17,7 +17,12 @@ type BlockTimeEstimator struct {
 }
 
 func (est *BlockTimeEstimator) init() {
+	est.blkPerSecond.Store(float64(0.1))
 	go est.estimateTask()
+}
+
+func (est *BlockTimeEstimator) getBPS() float64 {
+	return est.blkPerSecond.Load().(float64)
 }
 
 func (est *BlockTimeEstimator) estimateTask() {

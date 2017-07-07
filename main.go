@@ -79,6 +79,7 @@ func main() {
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
 			router.GET("/market/priceList", priceListHandler)
 			router.GET("/eth/blockNumber", blockNumberHandler)
+			router.GET("/eth/blockPerSecond", blockPerSecondHandler)
 			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			router.POST("/eth/getTransaction", getTransactionHandler)
