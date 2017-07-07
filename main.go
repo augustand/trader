@@ -72,6 +72,7 @@ func main() {
 
 			// init
 			go updateGasTask()
+			defaultBlockTimeEstimator.init()
 
 			// webapi
 			router := httprouter.New()

@@ -8,10 +8,9 @@ import (
 	"strings"
 
 	"encoding/hex"
-	"log"
 
 	"github.com/Jeffail/gabs"
-
+	log "github.com/Sirupsen/logrus"
 	"github.com/xtaci/trader/sha3"
 )
 
@@ -27,6 +26,7 @@ var (
 )
 
 func init() {
+	log.Info("Computing signatures")
 	for _, sign := range signatures {
 		d := sha3.NewKeccak256()
 		d.Write([]byte(sign))
