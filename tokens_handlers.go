@@ -72,5 +72,5 @@ func transferABIHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	data := fmt.Sprintf("0x%v%v%v", ERC20Signatures[signTransfer], abi.To, abi.Value)
-	w.Write([]byte(fmt.Sprintf(`{"contract":"%v", "data":"%v"}`, abi.Contract, data)))
+	w.Write([]byte(fmt.Sprintf(`{"data":"%v"}`, data)))
 }
