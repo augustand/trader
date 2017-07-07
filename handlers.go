@@ -131,3 +131,21 @@ func getTransactionHandler(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
+
+func blockNumberHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	if resp, err := http.Post(globalConfig.geth,
+		"application/json",
+		bytes.NewBufferString(`{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}`)); err == nil {
+		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
+		value, ok := jsonParsed.Path("result").Data().(string)
+		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(jsonParsed.Path("error").String()))
+			return
+		}
+		ret := fmt.Sprintf(`{"value":"%v"}`, value)
+		w.Write([]byte(ret))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+}

@@ -77,6 +77,7 @@ func main() {
 			router := httprouter.New()
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
 			router.GET("/market/priceList", priceListHandler)
+			router.GET("/eth/blockNumber", blockNumberHandler)
 			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			router.POST("/eth/getTransaction", getTransactionHandler)
