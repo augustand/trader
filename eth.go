@@ -15,14 +15,15 @@ import (
 )
 
 const (
-	signBalanceOf     = "balanceOf(address)"
-	signTotalSupply   = "totalSupply()"
-	signTransfer      = "transfer(address,uint256)"
-	signEventTransfer = "Transfer(address,address,uint256)"
+	signBalanceOf   = "balanceOf(address)"
+	signTotalSupply = "totalSupply()"
+	signTransfer    = "transfer(address,uint256)"
+	eventTransfer   = "Transfer(address,address,uint256)"
 )
 
 var (
-	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer, signEventTransfer}
+	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer}
+	events          = []string{eventTransfer}
 	ERC20Signatures = make(map[string]string)
 )
 
@@ -33,6 +34,14 @@ func init() {
 		d.Write([]byte(sign))
 		h := d.Sum(nil)
 		ERC20Signatures[sign] = hex.EncodeToString(h[0:4])
+		log.Println(sign, ERC20Signatures[sign])
+	}
+
+	for _, sign := range events {
+		d := sha3.NewKeccak256()
+		d.Write([]byte(sign))
+		h := d.Sum(nil)
+		ERC20Signatures[sign] = hex.EncodeToString(h)
 		log.Println(sign, ERC20Signatures[sign])
 	}
 }
