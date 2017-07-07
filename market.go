@@ -64,7 +64,7 @@ func (m *coinMarketCap) updateTask() {
 		} else {
 			log.Println(err)
 		}
-		<-time.After(5 * time.Second)
+		<-time.After(10 * time.Second)
 	}
 }
 
