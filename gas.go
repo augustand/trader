@@ -12,7 +12,7 @@ import (
 
 var latestGasPrice atomic.Value
 
-func update_gas_task() {
+func updateGasTask() {
 	for {
 		if resp, err := http.Post(globalConfig.geth,
 			"application/json",

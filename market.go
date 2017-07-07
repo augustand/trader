@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -42,13 +41,13 @@ type coinMarketCap struct {
 	muPriceList sync.Mutex
 }
 
-func NewCoinMarketCap() *coinMarketCap {
+func newCoinMarketCap() *coinMarketCap {
 	m := &coinMarketCap{}
-	go m.update_task()
+	go m.updateTask()
 	return m
 }
 
-func (m *coinMarketCap) update_task() {
+func (m *coinMarketCap) updateTask() {
 	for {
 		if resp, err := http.Get(coinMarketCapURL); err == nil {
 			var list []priceCoinMarketCap
@@ -65,77 +64,24 @@ func (m *coinMarketCap) update_task() {
 		} else {
 			log.Println(err)
 		}
-		<-time.After(10 * time.Second)
+		<-time.After(5 * time.Second)
 	}
 }
 
-type assetItem struct {
-	Count string `json:"count"`
-	Price string `json:"price"`
-}
-
-func (m *coinMarketCap) getPrices(symbols []string, unit string) (prices []string) {
+func (m *coinMarketCap) getJSON() ([]byte, error) {
 	m.muPriceList.Lock()
 	defer m.muPriceList.Unlock()
-	for k := range symbols {
-		if item, ok := m.priceList[symbols[k]]; ok {
-			switch unit {
-			case "CNY":
-				prices = append(prices, item.PriceCNY)
-			case "USD":
-				prices = append(prices, item.PriceUSD)
-			}
-
-		}
-	}
-	return
-}
-
-func (m *coinMarketCap) getAssets(symbols []string, address string) (prices []string) {
-	for k := range symbols {
-		contract := contractAddresses[symbols[k]]
-		address, err := paduint(address, 64)
-		if err != nil {
-			continue
-		}
-
-		data := fmt.Sprintf("0x%v%v", ERC20Signatures[signBalanceOf], address)
-		if ret, err := eth_call(contract, data); err == nil {
-			prices = append(prices, ret)
-		}
-	}
-
-	return
+	return json.Marshal(m.priceList)
 }
 
 func init() {
-	defaultCoinMarketCap = NewCoinMarketCap()
-}
-
-type priceListStruct struct {
-	List    []string `json:"list"`
-	Unit    string   `json:"unit"`
-	Address string   `json:"address"`
+	defaultCoinMarketCap = newCoinMarketCap()
 }
 
 func priceListHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	l := priceListStruct{}
-	dec := json.NewDecoder(r.Body)
-	dec.Decode(&l)
-
-	prices := defaultCoinMarketCap.getPrices(l.List, l.Unit)
-	assets := defaultCoinMarketCap.getAssets(l.List, l.Address)
-
-	if len(prices) != len(assets) {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	if bts, err := defaultCoinMarketCap.getJSON(); err == nil {
+		w.Write(bts)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
 	}
-
-	items := make([]assetItem, 0, len(prices))
-	for k := range prices {
-		items = append(items, assetItem{assets[k], prices[k]})
-	}
-
-	enc := json.NewEncoder(w)
-	enc.Encode(items)
 }

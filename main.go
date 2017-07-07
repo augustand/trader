@@ -71,11 +71,12 @@ func main() {
 			log.Println("postgres:", globalConfig.postgres)
 
 			// init
-			go update_gas_task()
+			go updateGasTask()
 
 			// webapi
 			router := httprouter.New()
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
+			router.GET("/market/priceList", priceListHandler)
 			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
 			router.POST("/eth/getTransaction", getTransactionHandler)
@@ -83,7 +84,6 @@ func main() {
 			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)
 			router.POST("/eth/tokens/totalSupply", tokenTotalSupplyHandler)
 			router.POST("/eth/tokens/transferABI", transferABIHandler)
-			router.POST("/market/priceList", priceListHandler)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
