@@ -15,18 +15,6 @@
 			"revisionTime": "2017-06-20T14:45:10Z"
 		},
 		{
-			"checksumSHA1": "IqQmIPZbwgzbZD4k7YX6Rj230pY=",
-			"path": "github.com/jinzhu/gorm",
-			"revision": "2a1463811ee1dc85d168fd639a2d4251d030e6e5",
-			"revisionTime": "2017-07-03T13:49:54Z"
-		},
-		{
-			"checksumSHA1": "VIp1lZm6joWhlNdwhady8u//qRw=",
-			"path": "github.com/jinzhu/inflection",
-			"revision": "1c35d901db3da928c72a72d8458480cc9ade058f",
-			"revisionTime": "2017-01-02T12:52:26Z"
-		},
-		{
 			"checksumSHA1": "gKyBj05YkfuLFruAyPZ4KV9nFp8=",
 			"path": "github.com/julienschmidt/httprouter",
 			"revision": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e",
