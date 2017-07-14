@@ -37,7 +37,7 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if exists := jsonParsed.Exists("to"); exists {
-		if from, ok = jsonParsed.Path("to").Data().(float64); !ok {
+		if to, ok = jsonParsed.Path("to").Data().(float64); !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf(tmpl, "parse to err")))
 			return
