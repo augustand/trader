@@ -11,7 +11,7 @@ import (
 
 func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var address string
-	var from, to int
+	var from, to float64
 	var ok bool
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	tmpl := `{error:%v}`
@@ -29,17 +29,17 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if exists := jsonParsed.Exists("from"); exists {
-		if from, ok = jsonParsed.Path("from").Data().(int); !ok {
+		if from, ok = jsonParsed.Path("from").Data().(float64); !ok {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, "get from err")))
+			w.Write([]byte(fmt.Sprintf(tmpl, "parse from err")))
 			return
 		}
 	}
 
 	if exists := jsonParsed.Exists("to"); exists {
-		if from, ok = jsonParsed.Path("to").Data().(int); !ok {
+		if from, ok = jsonParsed.Path("to").Data().(float64); !ok {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, "get to err")))
+			w.Write([]byte(fmt.Sprintf(tmpl, "parse to err")))
 			return
 		}
 	}
