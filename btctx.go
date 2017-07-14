@@ -9,6 +9,40 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	tmpl := `{error:%v}`
+	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+
+	var id string
+	var ok bool
+
+	if id, ok = jsonParsed.Path("txid").Data().(string); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, "get txid err")))
+		return
+	}
+
+	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/tx/%v", globalConfig.insight, id)); err == nil {
+		defer resp.Body.Close()
+		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, err)))
+			return
+		} else {
+			w.Write([]byte(bts))
+		}
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+}
+
 func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var address string
 	var from, to float64
