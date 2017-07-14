@@ -14,6 +14,7 @@ import (
 type Config struct {
 	listen           string
 	geth             string
+	insight          string
 	gasUpdate        time.Duration
 	coinMarketCapURL string
 	postgres         string
@@ -36,6 +37,11 @@ func main() {
 				Name:  "geth",
 				Value: "http://127.0.0.1:8545",
 				Usage: "geth nodes",
+			},
+			&cli.StringFlag{
+				Name:  "insight",
+				Value: "http://127.0.0.1:8545",
+				Usage: "insight nodes",
 			},
 			&cli.StringFlag{
 				Name:  "coinmarketcapurl",
@@ -64,12 +70,13 @@ func main() {
 			globalConfig.gasUpdate = c.Duration("gas_update")
 			globalConfig.coinMarketCapURL = c.String("coinmarketcapurl")
 			globalConfig.postgres = c.String("postgres")
+			globalConfig.insight = c.String("insight")
 			log.Println("listen:", globalConfig.listen)
 			log.Println("geth:", globalConfig.geth)
 			log.Println("gas_update:", globalConfig.gasUpdate)
 			log.Println("coinmarketcapurl:", globalConfig.coinMarketCapURL)
 			log.Println("postgres:", globalConfig.postgres)
-
+			log.Println("insight:", globalConfig.insight)
 			// init
 			go updateGasTask()
 			defaultBlockTimeEstimator.init()
@@ -87,6 +94,7 @@ func main() {
 			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)
 			router.POST("/eth/tokens/totalSupply", tokenTotalSupplyHandler)
 			router.POST("/eth/tokens/transferABI", transferABIHandler)
+			router.GET("/btc/getTransactions", getBtcTransactions)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
