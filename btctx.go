@@ -46,7 +46,7 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 
 	if from > to {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "from gt to")))
+		w.Write([]byte(fmt.Sprintf(tmpl, fmt.Sprintf("from:%v, to:%v", from, to))))
 		return
 	}
 
