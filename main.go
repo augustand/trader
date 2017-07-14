@@ -94,7 +94,7 @@ func main() {
 			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)
 			router.POST("/eth/tokens/totalSupply", tokenTotalSupplyHandler)
 			router.POST("/eth/tokens/transferABI", transferABIHandler)
-			router.GET("/btc/getTransactions", getBtcTransactions)
+			router.POST("/btc/getTransactions", getBtcTransactions)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
