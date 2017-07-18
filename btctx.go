@@ -10,8 +10,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+var tmpl = `{error:%v}`
+
 func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	tmpl := `{error:%v}`
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -27,20 +28,7 @@ func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/tx/%v", globalConfig.insight, id)); err == nil {
-		defer resp.Body.Close()
-		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, err)))
-			return
-		} else {
-			w.Write([]byte(bts))
-		}
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
-		return
-	}
+	get(w, fmt.Sprintf("%v/insight-api/tx/%v", globalConfig.insight, id))
 }
 
 func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -48,7 +36,6 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	var from, to float64
 	var ok bool
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
-	tmpl := `{error:%v}`
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -84,20 +71,7 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/addrs/%v/txs?from=%v&to=%v", globalConfig.insight, address, from, to)); err == nil {
-		defer resp.Body.Close()
-		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, err)))
-			return
-		} else {
-			w.Write([]byte(bts))
-		}
-	} else {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
-		return
-	}
+	get(w, fmt.Sprintf("%v/insight-api/addrs/%v/txs?from=%v&to=%v", globalConfig.insight, address, from, to))
 }
 
 // /insight-api/addrs/2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f/utxo
@@ -105,8 +79,6 @@ func send(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var rawtx string
 	var ok bool
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
-	tmpl := `{error:%v}`
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, err)))
@@ -140,8 +112,6 @@ func getUtxo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var address string
 	var ok bool
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
-	tmpl := `{error:%v}`
-
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, err)))
@@ -154,7 +124,32 @@ func getUtxo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/addrs/%v/utxo", globalConfig.insight, address)); err == nil {
+	get(w, fmt.Sprintf("%v/insight-api/addrs/%v/utxo", globalConfig.insight, address))
+}
+
+func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	get(w, fmt.Sprintf("%v/insight-api/utils/estimatefee", globalConfig.insight))
+}
+
+func balance(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var address string
+	var ok bool
+	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+	if address, ok = jsonParsed.Path("address").Data().(string); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
+		return
+	}
+	get(w, fmt.Sprintf("%v/insight-api/addr/%v/balance", globalConfig.insight, address))
+}
+
+func get(w http.ResponseWriter, url string) {
+	if resp, err := http.Get(url); err == nil {
 		defer resp.Body.Close()
 		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
