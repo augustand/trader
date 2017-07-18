@@ -131,7 +131,7 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	get(w, fmt.Sprintf("%v/insight-api/utils/estimatefee", globalConfig.insight))
 }
 
-func balance(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func getAddress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var address string
 	var ok bool
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
@@ -145,7 +145,7 @@ func balance(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
 		return
 	}
-	get(w, fmt.Sprintf("%v/insight-api/addr/%v/balance", globalConfig.insight, address))
+	get(w, fmt.Sprintf("%v/insight-api/addr/%v?noTxList=1", globalConfig.insight, address))
 }
 
 func get(w http.ResponseWriter, url string) {

@@ -100,7 +100,7 @@ func main() {
 			router.POST("/btc/getTransactionById", getBtcTransactionById)
 			router.POST("/btc/getUtxo", getUtxo)
 			router.POST("/btc/send", send)
-			router.POST("/btc/balance", balance)
+			router.POST("/btc/address", getAddress)
 			log.Fatal(http.ListenAndServe(globalConfig.listen, router))
 			select {}
 		},
