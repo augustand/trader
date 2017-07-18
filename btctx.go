@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"github.com/Jeffail/gabs"
 	"github.com/julienschmidt/httprouter"
@@ -20,7 +21,6 @@ func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var id string
 	var ok bool
-
 	if id, ok = jsonParsed.Path("txid").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, "get txid err")))
@@ -85,6 +85,76 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/addrs/%v/txs?from=%v&to=%v", globalConfig.insight, address, from, to)); err == nil {
+		defer resp.Body.Close()
+		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, err)))
+			return
+		} else {
+			w.Write([]byte(bts))
+		}
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+}
+
+// /insight-api/addrs/2NF2baYuJAkCKo5onjUKEPdARQkZ6SYyKd5,2NAre8sX2povnjy4aeiHKeEh97Qhn97tB1f/utxo
+func send(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var rawtx string
+	var ok bool
+	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
+	tmpl := `{error:%v}`
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+
+	if rawtx, ok = jsonParsed.Path("rawtx").Data().(string); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, "get rawtx err")))
+		return
+	}
+
+	if resp, err := http.PostForm(fmt.Sprintf("%v/insight-api/tx/send", globalConfig.insight), url.Values{"rawtx": {rawtx}}); err == nil {
+		defer resp.Body.Close()
+		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, err)))
+			return
+		} else {
+			w.Write([]byte(bts))
+		}
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+}
+
+// /insight-api/tx/send
+func getUtxo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var address string
+	var ok bool
+	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
+	tmpl := `{error:%v}`
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		return
+	}
+
+	if address, ok = jsonParsed.Path("address").Data().(string); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
+		return
+	}
+
+	if resp, err := http.Get(fmt.Sprintf("%v/insight-api/addrs/%v/utxo", globalConfig.insight, address)); err == nil {
 		defer resp.Body.Close()
 		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
