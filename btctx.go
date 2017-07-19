@@ -10,13 +10,13 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var tmpl = `{error:%v}`
+var tmpl = `{code:%v, message:%v}`
 
 func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 
@@ -24,7 +24,7 @@ func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter
 	var ok bool
 	if id, ok = jsonParsed.Path("txid").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "get txid err")))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get txid err")))
 		return
 	}
 
@@ -39,20 +39,20 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 
 	if address, ok = jsonParsed.Path("address").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get address err")))
 		return
 	}
 
 	if exists := jsonParsed.Exists("from"); exists {
 		if from, ok = jsonParsed.Path("from").Data().(float64); !ok {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, "parse from err")))
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "parse from err")))
 			return
 		}
 	}
@@ -60,14 +60,14 @@ func getBtcTransactions(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	if exists := jsonParsed.Exists("to"); exists {
 		if to, ok = jsonParsed.Path("to").Data().(float64); !ok {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, "parse to err")))
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "parse to err")))
 			return
 		}
 	}
 
 	if from > to {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, fmt.Sprintf("from:%v, to:%v", from, to))))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, fmt.Sprintf("from:%v, to:%v", from, to))))
 		return
 	}
 
@@ -81,13 +81,13 @@ func send(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 
 	if rawtx, ok = jsonParsed.Path("rawtx").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "get rawtx err")))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get rawtx err")))
 		return
 	}
 
@@ -95,14 +95,14 @@ func send(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		defer resp.Body.Close()
 		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, err)))
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 			return
 		} else {
 			w.Write([]byte(bts))
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 }
@@ -114,13 +114,13 @@ func getUtxo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 
 	if address, ok = jsonParsed.Path("address").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get address err")))
 		return
 	}
 
@@ -137,12 +137,12 @@ func getAddress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 	if address, ok = jsonParsed.Path("address").Data().(string); !ok {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, "get address err")))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get address err")))
 		return
 	}
 	get(w, fmt.Sprintf("%v/insight-api/addr/%v?noTxList=1", globalConfig.insight, address))
@@ -151,16 +151,29 @@ func getAddress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func get(w http.ResponseWriter, url string) {
 	if resp, err := http.Get(url); err == nil {
 		defer resp.Body.Close()
+		bts, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			w.WriteHeader(resp.StatusCode)
+			w.Write([]byte(fmt.Sprintf(tmpl, resp.StatusCode, err)))
+			return
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			w.WriteHeader(resp.StatusCode)
+			w.Write([]byte(fmt.Sprintf(tmpl, resp.StatusCode, string(bts))))
+			return
+		}
+
 		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, err)))
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 			return
 		} else {
 			w.Write([]byte(bts))
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(tmpl, err)))
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
 		return
 	}
 }
