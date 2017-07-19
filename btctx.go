@@ -10,7 +10,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-var tmpl = `{code:%v, message:%v}`
+var tmpl = `{"code":%v, "message":"%v"}`
 
 func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
