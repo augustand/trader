@@ -163,14 +163,7 @@ func get(w http.ResponseWriter, url string) {
 			w.Write([]byte(fmt.Sprintf(tmpl, resp.StatusCode, string(bts))))
 			return
 		}
-
-		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
-			return
-		} else {
-			w.Write([]byte(bts))
-		}
+		w.Write([]byte(bts))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
