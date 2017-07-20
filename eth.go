@@ -19,10 +19,11 @@ const (
 	signTotalSupply = "totalSupply()"
 	signTransfer    = "transfer(address,uint256)"
 	eventTransfer   = "Transfer(address,address,uint256)"
+	initWallet      = "initWallet(address[],uint256,uint256)"
 )
 
 var (
-	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer}
+	signatures      = []string{signBalanceOf, signTotalSupply, signTransfer, initWallet}
 	events          = []string{eventTransfer}
 	ERC20Signatures = make(map[string]string)
 )

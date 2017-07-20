@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/Jeffail/gabs"
 	"github.com/julienschmidt/httprouter"
@@ -95,20 +95,21 @@ func send(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	if resp, err := http.PostForm(fmt.Sprintf("%v/insight-api/tx/send", globalConfig.insight), url.Values{"rawtx": {rawtx}}); err == nil {
-		defer resp.Body.Close()
-		if bts, err := ioutil.ReadAll(resp.Body); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
-			return
+	resp, err := http.Post(fmt.Sprintf("%v/insight-api/tx/send", globalConfig.insight), "application/json", bytes.NewBufferString(fmt.Sprintf(`{"rawtx": "%v"}`, rawtx)))
+	if err == nil {
+		retval, _ := ioutil.ReadAll(resp.Body)
+		if resp.StatusCode == http.StatusOK {
+			w.Write(retval)
 		} else {
-			w.Write([]byte(bts))
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, string(retval))))
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
-		return
 	}
+
+	return
 }
 
 // /insight-api/tx/send
