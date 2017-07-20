@@ -147,8 +147,8 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get nbBlocks err")))
 		return
 	}
+	//					  /insight-api/utils/estimatefee[?nbBlocks=2]
 	url := fmt.Sprintf("%v/insight-api/utils/estimatefee?nbBlocks=%v", globalConfig.insight, nbBlocks)
-
 	if resp, err := http.Get(url); err == nil {
 		defer resp.Body.Close()
 		jsonParsed, err := gabs.ParseJSONBuffer(resp.Body)
@@ -158,7 +158,7 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 
-		val, ok := jsonParsed.Path("1").Data().(float64)
+		val, ok := jsonParsed.Path(`"1"`).Data().(float64)
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "paser ret err")))
