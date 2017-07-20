@@ -158,12 +158,19 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 
-		val, ok := jsonParsed.Path(`2`).Data().(float64)
+		val, ok := jsonParsed.Path(fmt.Sprint(nbBlocks)).Data().(float64)
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "paser ret err")))
 			return
 		}
+
+		if val < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "nbBlocks out of index ")))
+			return
+		}
+
 		w.Write([]byte(fmt.Sprintf(`{"staoshi":"0x%x"}`, int64(val*btc))))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
