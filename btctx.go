@@ -158,7 +158,7 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 
-		val, ok := jsonParsed.Path(`1`).Data().(float64)
+		val, ok := jsonParsed.Path(`2`).Data().(float64)
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "paser ret err")))
