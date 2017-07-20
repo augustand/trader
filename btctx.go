@@ -12,6 +12,10 @@ import (
 
 var tmpl = `{"code":%v, "message":"%v"}`
 
+var (
+	btc = 100000000.0
+)
+
 func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
 	if err != nil {
@@ -128,7 +132,43 @@ func getUtxo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	get(w, fmt.Sprintf("%v/insight-api/utils/estimatefee", globalConfig.insight))
+	var nbBlocks float64
+	var ok bool
+	jsonParsed, err := gabs.ParseJSONBuffer(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
+		return
+	}
+
+	if nbBlocks, ok = jsonParsed.Path("nbBlocks").Data().(float64); !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get nbBlocks err")))
+		return
+	}
+	url := fmt.Sprintf("%v/insight-api/utils/estimatefee?nbBlocks=%v", globalConfig.insight, nbBlocks)
+
+	if resp, err := http.Get(url); err == nil {
+		defer resp.Body.Close()
+		jsonParsed, err := gabs.ParseJSONBuffer(resp.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
+			return
+		}
+
+		val, ok := jsonParsed.Path("1").Data().(float64)
+		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "paser ret err")))
+			return
+		}
+		w.Write([]byte(fmt.Sprintf(`{"staoshi":"0x%x"}`, int64(val*btc))))
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
+		return
+	}
 }
 
 func getAddress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

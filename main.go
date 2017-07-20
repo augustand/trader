@@ -95,7 +95,7 @@ func main() {
 			router.POST("/eth/tokens/totalSupply", tokenTotalSupplyHandler)
 			router.POST("/eth/tokens/transferABI", transferABIHandler)
 			// btc
-			router.GET("/btc/estimatefee", estimatefee)
+			router.POST("/btc/estimatefee", estimatefee)
 			router.POST("/btc/getTransactions", getBtcTransactions)
 			router.POST("/btc/getTransactionById", getBtcTransactionById)
 			router.POST("/btc/getUtxo", getUtxo)
