@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 
 	"github.com/Jeffail/gabs"
@@ -13,7 +14,7 @@ import (
 var tmpl = `{"code":%v, "message":"%v"}`
 
 var (
-	btc = 100000000.0
+	staoshi = 100000000.0 / 1024.0
 )
 
 func getBtcTransactionById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -171,7 +172,7 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 
-		w.Write([]byte(fmt.Sprintf(`{"staoshi":"0x%x"}`, int64(val*btc))))
+		w.Write([]byte(fmt.Sprintf(`{"staoshi":"0x%x"}`, int64(math.Floor(val*staoshi)))))
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, err)))
