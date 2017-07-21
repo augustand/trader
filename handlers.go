@@ -25,7 +25,7 @@ func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httpr
 
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
-		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["%v","latest"],"id":1}`, value))); err == nil {
+		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["%v","pending"],"id":1}`, value))); err == nil {
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
