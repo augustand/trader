@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"encoding/hex"
+	"encoding/json"
 
 	"github.com/Jeffail/gabs"
 	log "github.com/Sirupsen/logrus"
@@ -48,11 +49,38 @@ func init() {
 }
 
 func ethEstimateGas(from, to, data, gas, gasPrice, value string) (string, error) {
-	if resp, err := http.Post(globalConfig.geth,
-		"application/json",
-		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas","params": [{"to": "%v", "from": "%v" ,"gas": "%v" , "gasPrice":"%v", "value": "%v", "data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))); err == nil {
+	var mp = make(map[string]interface{})
+	var dat = make(map[string]interface{})
+	mp["jsonrpc"] = "2.0"
+	mp["method"] = "eth_estimateGas"
+	mp["params"] = append([]interface{}(nil), dat, "latest")
+	mp["id"] = 0
+	if len(from) > 0 {
+		dat["from"] = from
+	}
 
-		log.Println(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas","params": [{"to": "%v", "from": "%v" ,"gas": "%v" , "gasPrice":"%v", "value": "%v", data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))
+	if len(to) > 0 {
+		dat["to"] = to
+	}
+
+	if len(data) > 0 {
+		dat["data"] = data
+	}
+
+	if len(gas) > 0 {
+		dat["gas"] = gas
+	}
+
+	if len(gasPrice) > 0 {
+		dat["gasPrice"] = gasPrice
+	}
+
+	if len(value) > 0 {
+		dat["value"] = value
+	}
+	var buff bytes.Buffer
+	json.NewEncoder(&buff).Encode(mp)
+	if resp, err := http.Post(globalConfig.geth, "application/json", &buff); err != nil {
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
 		value, ok := jsonParsed.Path("result").Data().(string)
 		if !ok {
