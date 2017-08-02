@@ -20,8 +20,9 @@ func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	// from, to, data string, gas, gasPrice, value float64)
 	from, _ := jsonParsed.Path("from").Data().(string)
 	to, _ := jsonParsed.Path("to").Data().(string)
-	if len(from) != 20 || len(to) != 20 {
+	if len(from) == 0 || len(to) == 0 {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(`{"message":"%v", "code":%v}`, "illegal params", http.StatusBadRequest)))
 		return
 	}
 
@@ -33,10 +34,11 @@ func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	ret, err := ethEstimateGas(from, to, data, gas, gasPrice, value)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf(`{"message":"%v", "code":%v}`, err, http.StatusBadRequest)))
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(fmt.Sprintf(`{"count":"%v"}`, ret)))
+	w.Write([]byte(fmt.Sprintf(`{"value":"%v"}`, ret)))
 }
 
 func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
