@@ -15,6 +15,30 @@ func getGasPriceHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	w.Write([]byte(ret))
 }
 
+func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	jsonParsed, _ := gabs.ParseJSONBuffer(r.Body)
+	// from, to, data string, gas, gasPrice, value float64)
+	from, _ := jsonParsed.Path("from").Data().(string)
+	to, _ := jsonParsed.Path("to").Data().(string)
+	if len(from) != 20 || len(to) != 20 {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// optional
+	data, _ := jsonParsed.Path("data").Data().(string)
+	gas, _ := jsonParsed.Path("gas").Data().(float64)
+	gasPrice, _ := jsonParsed.Path("gasPrice").Data().(float64)
+	value, _ := jsonParsed.Path("value").Data().(float64)
+	ret, err := ethEstimateGas(from, to, data, gas, gasPrice, value)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(fmt.Sprintf(`{"count":"%v"}`, ret)))
+}
+
 func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	jsonParsed, _ := gabs.ParseJSONBuffer(r.Body)
 	value, ok := jsonParsed.Path("address").Data().(string)

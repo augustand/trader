@@ -15,97 +15,14 @@
 			"revisionTime": "2017-06-20T14:45:10Z"
 		},
 		{
-			"checksumSHA1": "fIpm6Vr5a8kgr22gWkQx7vKUTyU=",
-			"origin": "github.com/ethereum/go-ethereum/vendor/github.com/btcsuite/btcd/btcec",
-			"path": "github.com/btcsuite/btcd/btcec",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "/Y/IvLkd3hSX1h3PDMHkkCBwK+4=",
-			"path": "github.com/ethereum/go-ethereum/common",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "NIN7nslnw4fUJlVcuxf5anvxAKQ=",
-			"path": "github.com/ethereum/go-ethereum/common/hexutil",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "Hd1Y5DkzYULQzJlSgYv2w5SiEAo=",
-			"path": "github.com/ethereum/go-ethereum/common/math",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "fpgH1s7TVi8r0gMAQbdwYCO635M=",
-			"path": "github.com/ethereum/go-ethereum/core/types",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "rofYNlEqnMen5Lg1N2+VcihuaIU=",
-			"path": "github.com/ethereum/go-ethereum/crypto",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "VsqOiLFDRSDa67wPeqlxKJmE0XE=",
-			"path": "github.com/ethereum/go-ethereum/crypto/secp256k1",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "yunX3AjO6JiMz0NSY/krvG3VWsk=",
-			"path": "github.com/ethereum/go-ethereum/crypto/sha3",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "NbRntdNRuwam0wGGNJ6HrR83P0M=",
-			"path": "github.com/ethereum/go-ethereum/log",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "dsD/vq8IdIgaiJJTfRnwKjF35oE=",
-			"path": "github.com/ethereum/go-ethereum/params",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "QARWkeJSFKOQF+/ryq6vqNmN8Q8=",
-			"path": "github.com/ethereum/go-ethereum/rlp",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "/zDGtbUMxoQYhzjFW2bEHustdPQ=",
-			"path": "github.com/ethereum/go-ethereum/trie",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
-			"checksumSHA1": "2sj/DbXoXdnPAfjAEyhS0Jj5QL0=",
-			"origin": "github.com/ethereum/go-ethereum/vendor/github.com/go-stack/stack",
-			"path": "github.com/go-stack/stack",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
 			"checksumSHA1": "gKyBj05YkfuLFruAyPZ4KV9nFp8=",
 			"path": "github.com/julienschmidt/httprouter",
 			"revision": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e",
 			"revisionTime": "2017-04-30T22:20:11Z"
 		},
 		{
-			"checksumSHA1": "KAzbLjI9MzW2tjfcAsK75lVRp6I=",
-			"origin": "github.com/ethereum/go-ethereum/vendor/github.com/rcrowley/go-metrics",
-			"path": "github.com/rcrowley/go-metrics",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
+			"path": "github.com/xtaci/trader/sha3",
+			"revision": ""
 		},
 		{
 			"checksumSHA1": "GlVnY+OiodlEKgT7cegC3hdzxOo=",
@@ -114,18 +31,11 @@
 			"revisionTime": "2017-06-27T07:55:33Z"
 		},
 		{
-			"checksumSHA1": "DQXNV0EivoHm4q+bkdahYXrjjfE=",
-			"origin": "github.com/ethereum/go-ethereum/vendor/gopkg.in/karalabe/cookiejar.v2/collections/prque",
-			"path": "gopkg.in/karalabe/cookiejar.v2/collections/prque",
-			"revision": "c98d9b49bf695d7ca0716ccff0d5a78dccac8110",
-			"revisionTime": "2017-06-22T12:54:24Z"
-		},
-		{
 			"checksumSHA1": "yFolYpsrXIjWE0UjR8ChC6Nmrhg=",
 			"path": "gopkg.in/urfave/cli.v2",
 			"revision": "61c3eb6ba1da1df17cd50f1456a9252d92bf5edd",
 			"revisionTime": "2017-04-24T21:45:55Z"
 		}
 	],
-	"rootPath": "github.com/xtaci/trader"
+	"rootPath": "trader"
 }

@@ -89,6 +89,7 @@ func main() {
 			router.GET("/eth/blockPerSecond", blockPerSecondHandler)
 			router.POST("/eth/getBalance", getBalanceHandler)
 			router.POST("/eth/getTransactionCount", getTransactionCountHandler)
+			router.POST("/eth/getEstimateGas", getEstimateGas)
 			router.POST("/eth/getTransaction", getTransactionHandler)
 			router.POST("/eth/sendRawTransaction", sendRawTransactionHandler)
 			router.POST("/eth/tokens/balanceOf", tokenBalanceOfHandler)

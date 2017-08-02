@@ -148,7 +148,6 @@ func estimatefee(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		w.Write([]byte(fmt.Sprintf(tmpl, http.StatusBadRequest, "get nbBlocks err")))
 		return
 	}
-	//					  /insight-api/utils/estimatefee[?nbBlocks=2]
 	url := fmt.Sprintf("%v/insight-api/utils/estimatefee?nbBlocks=%v", globalConfig.insight, nbBlocks)
 	if resp, err := http.Get(url); err == nil {
 		defer resp.Body.Close()

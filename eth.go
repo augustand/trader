@@ -47,6 +47,21 @@ func init() {
 	}
 }
 
+func ethEstimateGas(from, to, data string, gas, gasPrice, value float64) (string, error) {
+	if resp, err := http.Post(globalConfig.geth,
+		"application/json",
+		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas", "params": [{"to": "%v", "from"": "%v" ,"gas": %v , "gasPrice":%v, "value": %v, data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))); err == nil {
+		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
+		value, ok := jsonParsed.Path("result").Data().(string)
+		if !ok {
+			return jsonParsed.Path("error").String(), nil
+		}
+		return value, nil
+	} else {
+		return "", err
+	}
+}
+
 func ethCall(to, data string) (string, error) {
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
