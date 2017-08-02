@@ -82,7 +82,7 @@ func ethEstimateGas(from, to, data, gas, gasPrice, value string) (string, error)
 	json.NewEncoder(&buff).Encode(mp)
 	log.Println(buff.String())
 
-	if resp, err := http.Post(globalConfig.geth, "application/json", &buff); err != nil {
+	if resp, err := http.Post(globalConfig.geth, "application/json", &buff); err == nil {
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
 		log.Println(jsonParsed.String())
 		if resp.StatusCode != http.StatusOK {
