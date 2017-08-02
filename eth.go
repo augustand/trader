@@ -54,34 +54,17 @@ func ethEstimateGas(from, to, data, gas, gasPrice, value string) (string, error)
 	mp["jsonrpc"] = "2.0"
 	mp["method"] = "eth_estimateGas"
 	mp["id"] = 1
-	if len(from) > 0 {
-		dat["from"] = from
-	}
+	dat["from"] = from
+	dat["to"] = to
+	dat["data"] = data
+	dat["gas"] = gas
+	dat["gasPrice"] = gasPrice
+	dat["value"] = value
+	mp["params"] = append([]interface{}(nil), dat)
 
-	if len(to) > 0 {
-		dat["to"] = to
-	}
-
-	if len(data) > 0 {
-		dat["data"] = data
-	}
-
-	if len(gas) > 0 {
-		dat["gas"] = gas
-	}
-
-	if len(gasPrice) > 0 {
-		dat["gasPrice"] = gasPrice
-	}
-
-	if len(value) > 0 {
-		dat["value"] = value
-	}
-	mp["params"] = append([]interface{}(nil), dat, "latest")
 	var buff bytes.Buffer
 	json.NewEncoder(&buff).Encode(mp)
 	log.Println(buff.String())
-
 	if resp, err := http.Post(globalConfig.geth, "application/json", &buff); err == nil {
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
 		log.Println(jsonParsed.String())
