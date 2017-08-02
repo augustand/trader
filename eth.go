@@ -54,14 +54,35 @@ func ethEstimateGas(from, to, data, gas, gasPrice, value string) (string, error)
 	mp["jsonrpc"] = "2.0"
 	mp["method"] = "eth_estimateGas"
 	mp["id"] = 1
-	dat["from"] = from
-	dat["to"] = to
-	dat["data"] = data
-	dat["gas"] = gas
-	dat["gasPrice"] = gasPrice
-	dat["value"] = value
-	mp["params"] = append([]interface{}(nil), dat)
+	if len(from) > 0 {
+		dat["from"] = from
+	}
 
+	if len(to) > 0 {
+		dat["to"] = to
+	}
+
+	if len(data) > 0 {
+		dat["data"] = data
+	}
+
+	if len(gas) > 0 {
+		dat["gas"] = gas
+	}
+
+	if len(gasPrice) > 0 {
+		dat["gasPrice"] = gasPrice
+	}
+
+	if len(value) > 0 {
+		dat["value"] = value
+	}
+
+	if len(dat) == 0 {
+		return "", errors.New("params is nil")
+	}
+
+	mp["params"] = append([]interface{}(nil), dat)
 	var buff bytes.Buffer
 	json.NewEncoder(&buff).Encode(mp)
 	log.Println(buff.String())
