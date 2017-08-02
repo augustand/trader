@@ -34,6 +34,7 @@ func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	gasPrice, _ := jsonParsed.Path("gasPrice").Data().(string)
 	value, _ := jsonParsed.Path("value").Data().(string)
 	ret, err := ethEstimateGas(from, to, data, gas, gasPrice, value)
+	log.Println(ret, err)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(`{"message":"%v", "code":%v}`, err, http.StatusBadRequest)))
