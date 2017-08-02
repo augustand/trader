@@ -22,12 +22,6 @@ func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	from, _ := jsonParsed.Path("from").Data().(string)
 	to, _ := jsonParsed.Path("to").Data().(string)
 	log.Println(jsonParsed.String())
-	if len(from) == 0 || len(to) == 0 {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf(`{"message":"%v", "code":%v}`, "illegal params", http.StatusBadRequest)))
-		return
-	}
-
 	// optional
 	data, _ := jsonParsed.Path("data").Data().(string)
 	gas, _ := jsonParsed.Path("gas").Data().(string)
