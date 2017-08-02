@@ -50,7 +50,7 @@ func init() {
 func ethEstimateGas(from, to, data, gas, gasPrice, value string) (string, error) {
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
-		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas","params": [{"to": "%v", "from"": "%v" ,"gas": "%v" , "gasPrice":"%v", "value": "%v", data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))); err == nil {
+		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas","params": [{"to": "%v", "from": "%v" ,"gas": "%v" , "gasPrice":"%v", "value": "%v", data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))); err == nil {
 
 		log.Println(fmt.Sprintf(`{"jsonrpc":"2.0","method": "eth_estimateGas","params": [{"to": "%v", "from"": "%v" ,"gas": "%v" , "gasPrice":"%v", "value": "%v", data": "%v"}, "latest"], "id": 0}`, to, from, gas, gasPrice, value, data))
 		jsonParsed, _ := gabs.ParseJSONBuffer(resp.Body)
