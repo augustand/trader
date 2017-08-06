@@ -22,6 +22,7 @@ type Config struct {
 
 var globalConfig Config
 
+// default servr ip 118.116.88.176
 func main() {
 	app := &cli.App{
 		Name:    "trader",
