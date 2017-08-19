@@ -85,7 +85,7 @@ func main() {
 			// webapi
 			router := httprouter.New()
 			router.GET("/eth/getGasPrice", getGasPriceHandler)
-			router.GET("/market/priceList", priceListHandler)
+			//router.GET("/market/priceList", priceListHandler)
 			router.GET("/eth/blockNumber", blockNumberHandler)
 			router.GET("/eth/blockPerSecond", blockPerSecondHandler)
 			router.POST("/eth/getBalance", getBalanceHandler)
