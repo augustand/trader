@@ -56,6 +56,7 @@ func getTransactionCountHandler(w http.ResponseWriter, r *http.Request, ps httpr
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
+		w.WriteHeader(resp.StatusCode)
 		ret := fmt.Sprintf(`{"count":"%v"}`, value)
 		w.Write([]byte(ret))
 	} else {
@@ -101,6 +102,7 @@ func getBalanceHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getBalance","params":["%v","latest"],"id":1}`, value))); err == nil {
 
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
+
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
@@ -168,6 +170,7 @@ func blockNumberHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			w.Write([]byte(jsonParsed.Path("error").String()))
 			return
 		}
+		w.WriteHeader(resp.StatusCode)
 		ret := fmt.Sprintf(`{"value":"%v"}`, value)
 		w.Write([]byte(ret))
 	} else {
