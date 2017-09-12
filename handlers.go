@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/Jeffail/gabs"
@@ -21,14 +20,12 @@ func getEstimateGas(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	// from, to, data string, gas, gasPrice, value float64)
 	from, _ := jsonParsed.Path("from").Data().(string)
 	to, _ := jsonParsed.Path("to").Data().(string)
-	log.Println(jsonParsed.String())
 	// optional
 	data, _ := jsonParsed.Path("data").Data().(string)
 	gas, _ := jsonParsed.Path("gas").Data().(string)
 	gasPrice, _ := jsonParsed.Path("gasPrice").Data().(string)
 	value, _ := jsonParsed.Path("value").Data().(string)
 	ret, err := ethEstimateGas(from, to, data, gas, gasPrice, value)
-	log.Println(ret, err)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf(`{"message":"%v", "code":%v}`, err, http.StatusBadRequest)))
