@@ -75,11 +75,11 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":["%v"],"id":1}`, value))); err == nil {
 		log.Println("tx:", value)
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
+		log.Println(jsonParsed)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
-			log.Println(jsonParsed)
 			return
 		}
 		ret := fmt.Sprintf(`{"txHash":"%v"}`, value)
