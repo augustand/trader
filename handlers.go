@@ -73,6 +73,7 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 	if resp, err := http.Post(globalConfig.geth,
 		"application/json",
 		bytes.NewBufferString(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":["%v"],"id":1}`, value))); err == nil {
+		log.Println("tx:", value)
 		jsonParsed, _ = gabs.ParseJSONBuffer(resp.Body)
 		value, ok = jsonParsed.Path("result").Data().(string)
 		if !ok {
