@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Jeffail/gabs"
+	log "github.com/Sirupsen/logrus"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -77,6 +78,7 @@ func sendRawTransactionHandler(w http.ResponseWriter, r *http.Request, ps httpro
 		if !ok {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte(jsonParsed.Path("error").String()))
+			log.Println(jsonParsed)
 			return
 		}
 		ret := fmt.Sprintf(`{"txHash":"%v"}`, value)
